@@ -93,7 +93,7 @@ export const stripeWebhooks = async (request, response) => {
       courseData.enrolledStudents.push(userData)
       await courseData.save()
 
-      userData.enrolledStudents.push(courseData._id)
+      userData.enrolledCourses.push(courseData._id)
       await userData.save()
 
       purchaseData.status = 'completed'
