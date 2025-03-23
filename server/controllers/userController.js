@@ -41,7 +41,7 @@ export const purchaseCourse = async (req, res) =>{
         const userData = await User.findById(userId)
         const courseData = await Course.findById(courseId)
         if (!userData || !courseData) {
-            return res,json({success: false, messasge: 'Data Not Found'})
+            return res.json({success: false, message: 'Data Not Found'})
         }
 
         const purchaseData = {
@@ -95,7 +95,7 @@ export const updateUserCourseProgress = async (req, res) => {
 
         if (progressData) {
             if (progressData.lectureCompleted.includes(lectureId)) {
-                return res.json({success: true, messasge: 'Lecture Already Completed'})
+                return res.json({success: true, message: 'Lecture Already Completed'})
             }
 
             progressData.lectureCompleted.push(lectureId)
@@ -108,9 +108,9 @@ export const updateUserCourseProgress = async (req, res) => {
             })
         }
 
-        res.json({success: true, messasge: 'Progress Updated'})
+        res.json({success: true, message: 'Progress Updated'})
     } catch (error) {
-        res.json({success: false, messasge: error.messasge})
+        res.json({success: false, message: error.message})
     }
 }
 
@@ -124,7 +124,7 @@ export const getUserCourseProgress = async(req, res) => {
         const progressData = await CourseProgress.findOne({userId, courseId})
         res.json({success: true}, progressData)
     } catch (error) {
-        res.json({success: false, messasge: error.messasge})
+        res.json({success: false, message: error.message})
     }
 }
 
