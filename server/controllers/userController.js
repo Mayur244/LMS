@@ -20,7 +20,6 @@ export const getUserData = async (req, res)=> {
 
 
 // Users Enrolled Courses with Lecture Links
-
 export const userEnrolledCourses = async (req, res) => {
     try {
         const userId = req.auth.userId
@@ -116,20 +115,20 @@ export const updateUserCourseProgress = async (req, res) => {
 
 
 // get User Course Progress
-
-export const getUserCourseProgress = async(req, res) => {
+export const getUserCourseProgress = async (req, res) => {
     try {
-        const userId = req.auth.userId
-        const {courseId} = req.body
-        const progressData = await CourseProgress.findOne({userId, courseId})
-        res.json({success: true}, progressData)
+        const userId = req.auth.userId;
+        const { courseId } = req.body;
+        const progressData = await CourseProgress.findOne({ userId, courseId });
+
+        res.status(200).json({ success: true, progressData });
     } catch (error) {
-        res.json({success: false, message: error.message})
+        res.status(500).json({ success: false, message: error.message });
     }
-}
+};
+
 
 // Add user rating to course
-
 export const addUserRating = async(req, res) => {
     const userId = req.auth.userId;
     const {courseId, rating} = req.body

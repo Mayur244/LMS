@@ -6,6 +6,8 @@ import { assets } from "../../assets/assets";
 import humanizeDuration from "humanize-duration";
 import Footer from "../../components/student/Footer";
 import YouTube from "react-youtube";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const CourseDetails = () => {
   const { id } = useParams();
@@ -17,21 +19,64 @@ const CourseDetails = () => {
   const [playerData, setPlayerData] = useState(null);
 
   const {
-    allCourses,
     calculateCourseRating,
     calculateChapterTime,
     calculateCourseDuration,
     calculateNoOfLectures,
+    backendUrl,
+    userData,
+    getToken
   } = useContext(AppContext);
 
   const fetchAllCourses = async () => {
-    const findCourse = allCourses.find((course) => course._id === id);
-    setCourseData(findCourse);
+    try {
+      const {data} = await axios.get(backendUrl + '/api/course/' + id)
+
+      if (data.success) {
+        setCourseData(data.courseData)
+      }else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
   };
+
+
+  const enrollCourse = async ()=>{
+    try {
+      if (!userData) {
+        return toast.warn("Login to Enroll")
+      }
+
+      if (isAlreadyEnrolled) {
+        return toast.warn("Already Enrolled")
+      }
+      const token = await getToken()
+
+      const {data} = await axios.post(backendUrl + '/api/user/purchase', {courseId: courseData._id}, {headers: {Authorization: `Bearer ${token}`}})
+
+      if (data.success) {
+        const {session_url} = data;
+        window.location.replace(session_url)
+      }else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+      
+    }
+  }
 
   useEffect(() => {
     fetchAllCourses();
-  }, [allCourses]);
+  }, []);
+
+  useEffect(() => {
+    if (userData && courseData) {
+      setIsAlreadyEnrolled(userData.enrolledCourses.includes(courseData._id))
+    }
+  }, [userData, courseData]);
 
   const toggleSection = (index) => {
     setOpenSections((prev) => ({ ...prev, [index]: !prev[index] }));
@@ -40,7 +85,7 @@ const CourseDetails = () => {
   return courseData ? (
     <>
       <div className="flex md:flex-row flex-col-reverse gap-10 relative items-start justify-between md:px-36 px-8 md:pt-30 pt-20 text-left ">
-        <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-cyan-100/70 z-1"></div>
+        <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-[#EBEAFF] z-1"></div>
 
         {/* left column */}
         <div className="max-w-xl z-10 text-gray-500">
@@ -71,7 +116,7 @@ const CourseDetails = () => {
                 />
               ))}
             </div>
-            <p className="text-blue-600">
+            <p className="text-[#3D3BF3]">
               ({courseData.courseRatings.length}{" "}
               {courseData.courseRatings.length > 1 ? "ratings" : "rating"})
             </p>
@@ -81,7 +126,7 @@ const CourseDetails = () => {
             </p>
           </div>
           <p className="text-sm">
-            Course by <span className="text-blue-600">Learnify</span>
+            Course by <span className="text-[#3D3BF3]">Learnify</span>
           </p>
           <div className="pt-8 text-gray-800">
             <h2 className="text-xl font-semibold">Course Structure</h2>
@@ -138,7 +183,7 @@ const CourseDetails = () => {
                                         .pop(),
                                     })
                                   }
-                                  className="text-blue-500 cursor-pointer"
+                                  className="text-[#3D3BF3] cursor-pointer"
                                 >
                                   Preview
                                 </p>
@@ -237,7 +282,7 @@ const CourseDetails = () => {
                 <p>{calculateNoOfLectures(courseData)} lessons</p>
               </div>
             </div>
-            <button className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium cursor-pointer">
+            <button onClick={enrollCourse} className="md:mt-6 mt-4 w-full py-3 rounded bg-[#9694FF] text-white font-medium cursor-pointer">
               {isAlreadyEnrolled ? "Already Enrolled" : "Enroll Now"}
             </button>
 

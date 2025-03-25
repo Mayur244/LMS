@@ -1,5 +1,4 @@
 import { createContext, useEffect, useState } from "react";
-import { dummyCourses } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import humanizeDuration from "humanize-duration";
 import {useAuth, useUser} from '@clerk/clerk-react'
@@ -45,7 +44,7 @@ export const AppContextProvider = (props) => {
 
   const fetchUserData = async ()=>{
 
-    if (user.publicMetadata.role === 'educator') {
+    if (user?.publicMetadata?.role === 'educator') {
       setIsEducator(true)
     }
 
@@ -53,7 +52,6 @@ export const AppContextProvider = (props) => {
       const token =  await getToken();
 
       const {data} = await axios.get(backendUrl + '/api/user/data', {headers: {Authorization: `Bearer ${token}`}})
-
       if (data.success) {
         setUserData(data.user)
       }else{
@@ -71,7 +69,7 @@ export const AppContextProvider = (props) => {
       return 0;
     }
     let totalRating = 0;
-    course.courseRatings.forEach((rating) => {
+    course.courseRatings.forEach(rating => {
       totalRating += rating.rating;
     });
     return Math.floor(totalRating / course.courseRatings.length);
