@@ -39,7 +39,7 @@ const Navbar = () => {
       }`}
     >
       <div onClick={() => {navigate('/')}} className="flex cursor-pointer">
-        <img src="../../../public/education_favicon.png" alt="icon" />
+        <img src="/education_favicon.png" alt="icon" />
         <img src={assets.learnify_logo} alt="logo" className="w-28 lg:w-32" />
         </div>
       {/* For Desktop Screens*/}
